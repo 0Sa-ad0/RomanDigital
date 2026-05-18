@@ -25,6 +25,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
+        android:title="Display"
+        app:iconSpaceReserved="false" >
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="switch_seconds"
+            android:title="@string/seconds_title"
+            android:summaryOff="@string/seconds_off"
+            android:summaryOn="@string/seconds_on"
+            app:iconSpaceReserved="true" />
+        <SeekBarPreference
+            android:defaultValue="10"
+            android:key="seekbar_text_scale"
+            android:max="10"
+            android:title="@string/text_scale_title"
+            app:min="1"
+            app:showSeekBarValue="false"
+            app:iconSpaceReserved="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="Screen"
         app:iconSpaceReserved="false" >
         <SwitchPreferenceCompat

@@ -64,6 +64,8 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import android.os.Handler;
+import android.os.Looper;
 
 /** @noinspection Convert2Lambda, SpellCheckingInspection */
 public class MainActivity extends AppCompatActivity {
@@ -85,9 +87,20 @@ public class MainActivity extends AppCompatActivity {
             alignment = "switch_alignment",
             ampmSeparator = "switch_separator",
             keepon = "switch_keep_on",
-            onlywhencharging = "switch_when_charging";
+            onlywhencharging = "switch_when_charging",
+            seconds = "switch_seconds";
 
     private SharedPreferences prefs;
+
+    // Per-second update handler (used when Show Seconds is enabled)
+    private final Handler secondsHandler = new Handler(Looper.getMainLooper());
+    private final Runnable secondsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateTimeDisplay();
+            secondsHandler.postDelayed(this, 1000);
+        }
+    };
 
     //////////////////////////////////////////////////////////////////////
 
@@ -136,13 +149,15 @@ public class MainActivity extends AppCompatActivity {
     private void updateTimeDisplay() {
         // Negate romantime.now arguments where needed to accommodate chosen state arrangement of
         // a/b switches, where false/true states depend on chosen left/right positions
-        String now = romantime.now( !getPref(ampm), getPref(ampmSeparator), !getPref(alignment), TimeZone.getDefault().getID() );
+        boolean showSecs = getPref(seconds);
+        String now = romantime.now( !getPref(ampm), getPref(ampmSeparator), !getPref(alignment), TimeZone.getDefault().getID(), showSecs );
 
         // IMPORTANT:
         // For the String returned by romantime.now to be correctly aligned in TimeDisplay textview,
         // TextDisplay.typeface MUST be set in activity_main.xml to 'monospace'
 
         float pxCurrentControlTextSize = TimeDisplaySizeControl.getTextSize();
+        float textScale = (prefs != null) ? prefs.getInt("seekbar_text_scale", 10) / 10.0f : 1.0f;
 
         if (TimeDisplay.getVisibility() == View.INVISIBLE) {
             float pxDefaultControlTextSize = getResources().getDimension(R.dimen.timedisplay_size_control_default_textsize);
@@ -162,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        TimeDisplay.setTextSize(TypedValue.COMPLEX_UNIT_PX, pxCurrentControlTextSize);
+        TimeDisplay.setTextSize(TypedValue.COMPLEX_UNIT_PX, pxCurrentControlTextSize * textScale);
         TimeDisplay.setText(now);
         setKeepScreenOn();
     }
@@ -387,8 +402,9 @@ public class MainActivity extends AppCompatActivity {
     //---------------------------------------------------------------
 
     protected void onPause() {
+        secondsHandler.removeCallbacks(secondsRunnable);
+        try { unregisterReceiver(broadcastReceiver); } catch (IllegalArgumentException ignored) { }
         unregisterReceiver(updateReceiver);
-        unregisterReceiver(broadcastReceiver);
         findViewById(R.id.my_toolbar).setVisibility(View.INVISIBLE);
 
         // Broadcast an intent immediately after either Close or Save is pressed
@@ -413,14 +429,26 @@ public class MainActivity extends AppCompatActivity {
         Toolbar vToolbar = findViewById(R.id.my_toolbar);
         vToolbar.setVisibility(View.INVISIBLE);
 
-        String maxtime_fill = getString((getPref(ampm) == left) ? R.string.civ_fill : R.string.mil_fill);
+        boolean showSecs = getPref(seconds);
+        int fillRes;
+        if (getPref(ampm) == left) {
+            fillRes = showSecs ? R.string.civ_fill_s : R.string.civ_fill;
+        } else {
+            fillRes = showSecs ? R.string.mil_fill_s : R.string.mil_fill;
+        }
+        String maxtime_fill = getString(fillRes);
         TimeDisplaySizeControl = findViewById(R.id.timedisplay_size_control);
         TimeDisplaySizeControl.setText(maxtime_fill);
         TimeDisplay.setTextSize(TypedValue.COMPLEX_UNIT_PX, TimeDisplaySizeControl.getTextSize());
         setDisplayColorFromPref();
         setDisplayFont("roboto");
 
-        registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        if (showSecs) {
+            secondsHandler.removeCallbacks(secondsRunnable);
+            secondsHandler.post(secondsRunnable);
+        } else {
+            registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        }
         ContextCompat.registerReceiver(context, updateReceiver, new IntentFilter(UPDATE_DISPLAY), ContextCompat.RECEIVER_NOT_EXPORTED);
         text_resize_attempt_count = 0;
         sendBroadcast(makeIntent(UPDATE_DISPLAY));

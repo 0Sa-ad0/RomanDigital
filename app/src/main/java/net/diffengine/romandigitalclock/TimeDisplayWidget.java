@@ -88,6 +88,7 @@ public class TimeDisplayWidget extends AppWidgetProvider {
         boolean ampm          = sp.getBoolean("switch_format" + appWidgetId, false);
         boolean ampmSeparator = sp.getBoolean("switch_separator" + appWidgetId, false);
         boolean alignment     = sp.getBoolean("switch_alignment" + appWidgetId, false);
+        boolean showSeconds   = sp.getBoolean("switch_seconds" + appWidgetId, false);
         String  tzId          = sp.getString("list_timezone" + appWidgetId, TimeZone.getDefault().getID());
         String layoutMoniker  = sp.getString("list_widget_layout" + appWidgetId, "no_label" );
         int layoutId          = R.layout.time_display_widget;
@@ -96,7 +97,7 @@ public class TimeDisplayWidget extends AppWidgetProvider {
 
         // Negate romantime.now arguments where needed to accommodate chosen state arrangement of
         // a/b switches, where false/true states depend on chosen left/right positions
-        CharSequence widgetText = romantime.now(!ampm, ampmSeparator, !alignment, tzId);
+        CharSequence widgetText = romantime.now(!ampm, ampmSeparator, !alignment, tzId, showSeconds);
 //        widgetText = "VIII:XXXVIII";      // Test text; uncomment for constant full-width 12-hour display
         RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 
@@ -275,7 +276,14 @@ public class TimeDisplayWidget extends AppWidgetProvider {
         // Get text of max length equal to the clock's max width display
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         boolean ampm = sp.getBoolean("switch_format" + appWidgetId, false);
-        String maxlengthText = context.getString((ampm == MainActivity.left) ? R.string.civ_fill : R.string.mil_fill);
+        boolean showSeconds = sp.getBoolean("switch_seconds" + appWidgetId, false);
+        int fillResId;
+        if (ampm == MainActivity.left) {
+            fillResId = showSeconds ? R.string.civ_fill_s : R.string.civ_fill;
+        } else {
+            fillResId = showSeconds ? R.string.mil_fill_s : R.string.mil_fill;
+        }
+        String maxlengthText = context.getString(fillResId);
         int widgetWidth;
         int widgetHeight;
 
@@ -308,7 +316,9 @@ public class TimeDisplayWidget extends AppWidgetProvider {
         int textsize = calcTimeDisplayTextSize(context, appWidgetId, widgetOptions);
         int fudgefactor = 3;    // Conservative value for compensation of possible error in calculated text size
                                 // (observed on a Nexus 6 AVD running API 24; value of 1 was sufficent to compensate)
-        views.setTextViewTextSize(appwidget_clock, TypedValue.COMPLEX_UNIT_DIP, textsize-fudgefactor);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        float scale = sp.getInt("seekbar_text_scale" + appWidgetId, 10) / 10.0f;
+        views.setTextViewTextSize(appwidget_clock, TypedValue.COMPLEX_UNIT_DIP, (textsize - fudgefactor) * scale);
     }
 
     @Override

@@ -25,13 +25,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -45,17 +44,20 @@ public class TimeTickRelay extends Service {
         return null;
     }
 
-    @SuppressWarnings("InnerClassMayBeStatic")
-    private class TickReceiver extends BroadcastReceiver {
+    // Per-second relay loop — fires RELAYED_TIME_TICK to all widget instances every second.
+    // This replaces the former ACTION_TIME_TICK (per-minute) approach, enabling seconds display
+    // on widgets while remaining efficient as a foreground service already running.
+    private final Handler tickHandler = new Handler(Looper.getMainLooper());
+    private final Runnable tickRunnable = new Runnable() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Intent tickIntent = new Intent(context, TimeDisplayWidget.class);
+        public void run() {
+            Intent tickIntent = new Intent(TimeTickRelay.this, TimeDisplayWidget.class);
             tickIntent.setAction(TimeDisplayWidget.RELAYED_TIME_TICK);
-            tickIntent.setPackage(context.getPackageName());
-            context.sendBroadcast(tickIntent);
+            tickIntent.setPackage(getPackageName());
+            sendBroadcast(tickIntent);
+            tickHandler.postDelayed(this, 1000);
         }
-    }
-    TickReceiver tickReceiver = new TickReceiver();
+    };
 
     @Override
     public void onCreate() {
@@ -67,7 +69,8 @@ public class TimeTickRelay extends Service {
         Notification notification = createNotification(CHANNEL_ID, createClickPendingIntent());
         ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, getServiceType());
 
-        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        // Start per-second relay loop
+        tickHandler.post(tickRunnable);
     }
 
     private void createNotificationChannel(String channel_id) {
@@ -113,6 +116,6 @@ public class TimeTickRelay extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(tickReceiver);
+        tickHandler.removeCallbacks(tickRunnable);
     }
 }

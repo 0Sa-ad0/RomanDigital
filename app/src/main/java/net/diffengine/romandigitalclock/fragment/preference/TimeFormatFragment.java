@@ -86,6 +86,18 @@ public class TimeFormatFragment extends PreferenceFragmentCompat {
         category.addPreference(pref);
     }
 
+    private void addSecondsSwitch() {
+        SwitchPreferenceCompat pref = new SwitchPreferenceCompat(prefManagerContext);
+        pref.setLayoutResource(R.layout.a_b_switch_layout);
+        pref.setKey("switch_seconds" + postfix);
+        pref.setDefaultValue(false);
+        pref.setTitle(getString(R.string.seconds_title));
+        pref.setSummaryOff(getString(R.string.seconds_off));
+        pref.setSummaryOn(getString(R.string.seconds_on));
+        pref.setIconSpaceReserved(true);
+        category.addPreference(pref);
+    }
+
     private void addListPreference (String key, String title, String[] entries, String[] entryValues, String defaultValue) {
         ListPreference pref = new ListPreference(prefManagerContext);
         pref.setIconSpaceReserved(true);    // Required for some devices that default this to false
@@ -122,6 +134,9 @@ public class TimeFormatFragment extends PreferenceFragmentCompat {
         addABSwitchPreference("switch_separator", ": for All", "· for AM\n: for PM");
 
         if (!postfix.isEmpty()) {
+            // Seconds toggle (per-widget)
+            addSecondsSwitch();
+
             addSeparator("S1");
 
             String[] timezoneIds = TimeZone.getAvailableIDs();

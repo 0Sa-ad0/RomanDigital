@@ -47,7 +47,7 @@ public class romantime {
 		return separator;
 	}
 
-	public static String now(boolean ampm, boolean ampmSeparator, boolean center, String tzId) {
+	public static String now(boolean ampm, boolean ampmSeparator, boolean center, String tzId, boolean showSeconds) {
 
 		// ampm		ampmSeparator
 		// T		T 				12 hr / ampm separator
@@ -59,9 +59,10 @@ public class romantime {
 		cal.setTimeZone(TimeZone.getTimeZone(tzId));
 		String rHours	 = getHours(cal, ampm);
 		String rMinutes  = itor(cal.get(Calendar.MINUTE));
+		String rSeconds  = itor(cal.get(Calendar.SECOND));
 		String separator = getSeparator(cal, ampm, ampmSeparator);
 		//noinspection ReassignedVariable
-		String rtime     = rHours + separator + rMinutes;
+		String rtime     = rHours + separator + rMinutes + (showSeconds ? ":" + rSeconds : "");
 
 		if (!center) {
 			/* ADD PADDING */
@@ -72,11 +73,21 @@ public class romantime {
 			// even though none will then be used for VIII o'clock, because the substring method to
 			// retrieve the appropriate length of padding will throw an exception due to reading
 			// past the end of the string if only three are used. As is, it returns "" for VIII.
-			String lpad = ("    " + ((ampm) ? "" : " ")).substring(rHours.length());
-			String rpad = "       ".substring(rMinutes.length());
-			rtime = lpad + rtime + rpad;
+			String lpad = ("    " + ((ampm) ? "" : " ")).substring(rHours.length());
+			if (!showSeconds) {
+				String rpad = "       ".substring(rMinutes.length());
+				rtime = lpad + rtime + rpad;
+			} else {
+				String spad = "       ".substring(rSeconds.length());
+				rtime = lpad + rtime + spad;
+			}
 		}
 
 		return rtime;
+	}
+
+	/** Backwards-compatible overload — no seconds. */
+	public static String now(boolean ampm, boolean ampmSeparator, boolean center, String tzId) {
+		return now(ampm, ampmSeparator, center, tzId, false);
 	}
 }

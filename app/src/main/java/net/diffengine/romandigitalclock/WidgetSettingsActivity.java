@@ -126,17 +126,28 @@ public class WidgetSettingsActivity extends AppCompatActivity {
             return "Opacity: " + percentage + "%";
         }
 
+        String buildTextScaleLabel(int rawvalue) {
+            int percentage = rawvalue * 10;
+            return "Text size: " + percentage + "%";
+        }
+
         Context prefManagerContext;
         PreferenceCategory category;
 
-        @SuppressWarnings("SameParameterValue")     // From https://stackoverflow.com/a/48734923/
         private void addSeekBarPreference (String key) {
             SeekBarPreference pref = new SeekBarPreference(prefManagerContext);
             pref.setKey(key + postfix);
             pref.setMax(10);
             pref.setShowSeekBarValue(false);
             pref.setUpdatesContinuously(true);
-            pref.setSummary("Opacity: %");
+
+            if (key.equals("seekbar_text_scale")) {
+                // Default 10 = 100%; minimum 1 = 10%
+                pref.setDefaultValue(10);
+                pref.setSummary("Text size: %");
+            } else {
+                pref.setSummary("Opacity: %");
+            }
 
             // Required for some devices that default this to false
             pref.setIconSpaceReserved(true);
@@ -156,15 +167,24 @@ public class WidgetSettingsActivity extends AppCompatActivity {
             screen.addPreference(category);
 
                 addSeekBarPreference("seekbar_opacity");
+            addSeekBarPreference("seekbar_text_scale");
 
             setPreferenceScreen(screen);
 
-            SeekBarPreference seekBarPreference = findPreference("seekbar_opacity" + postfix);
-            Objects.requireNonNull(seekBarPreference).setSummary( buildOpacityLabel(seekBarPreference.getValue()) );
-
-            seekBarPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            SeekBarPreference opacityPref = findPreference("seekbar_opacity" + postfix);
+            Objects.requireNonNull(opacityPref).setSummary( buildOpacityLabel(opacityPref.getValue()) );
+            opacityPref.setOnPreferenceChangeListener((preference, newValue) -> {
                 SeekBarPreference seekBarPref = (SeekBarPreference) preference;
                 seekBarPref.setSummary( buildOpacityLabel((int)newValue) );
+                return true;
+            });
+
+            SeekBarPreference textScalePref = findPreference("seekbar_text_scale" + postfix);
+            Objects.requireNonNull(textScalePref).setTitle("Text size");
+            Objects.requireNonNull(textScalePref).setSummary( buildTextScaleLabel(textScalePref.getValue()) );
+            textScalePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                SeekBarPreference seekBarPref = (SeekBarPreference) preference;
+                seekBarPref.setSummary( buildTextScaleLabel((int)newValue) );
                 return true;
             });
         }
