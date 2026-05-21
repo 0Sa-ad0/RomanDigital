@@ -35,7 +35,7 @@ public class BootCompletedBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getAction();
 
         if (action != null && action.equals(ACTION_BOOT_COMPLETED)) {
-            // Relsy's never running on boot completion, so call function to start it directly
+            // Relay's never running on boot completion, so call function to start it directly
             startRelayIfWidgets(context);
         }
     }

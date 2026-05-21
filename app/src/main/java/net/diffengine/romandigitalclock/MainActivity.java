@@ -20,7 +20,6 @@
 
 package net.diffengine.romandigitalclock;
 
-import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE;
 import static android.view.View.VISIBLE;
 
 import static net.diffengine.romandigitalclock.RelayManager.startRelayIfNeeded;
@@ -43,8 +42,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.widget.ActionMenuView;
 
-import android.app.ActivityManager;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,7 +54,6 @@ import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;

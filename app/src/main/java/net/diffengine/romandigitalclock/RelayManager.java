@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
@@ -43,11 +44,18 @@ public class RelayManager {
                 startForegndSvc(context, serviceIntent);
             } catch (Exception e) {
                 new AlertDialog.Builder(context)
-                        .setTitle(Html.fromHtml("<font color='#" + MainActivity.getHexFromColorRes(context, R.color.clock_red) + "'>" + context.getString(R.string.fgnd_svc_err_title) + "</font>"))
-                        .setMessage(Html.fromHtml(context.getString(R.string.fgnd_svc_err_1) + dbl_br + context.getString(R.string.fgnd_svc_err_2) + dbl_br + context.getString(R.string.fgnd_svc_err_3)))
-                        .setPositiveButton("Yes", (dialogInterface, i) -> {
-                            startRelayIfWidgets(context);
-                        })
+                        .setTitle(conjureFromHtml(
+                                "<font color='#"
+                                + MainActivity.getHexFromColorRes(context, R.color.clock_red)
+                                + "'>" + context.getString(R.string.fgnd_svc_err_title)
+                                + "</font>")
+                        )
+                        .setMessage(conjureFromHtml(
+                                context.getString(R.string.fgnd_svc_err_1) + dbl_br
+                                + context.getString(R.string.fgnd_svc_err_2) + dbl_br
+                                + context.getString(R.string.fgnd_svc_err_3))
+                        )
+                        .setPositiveButton("Yes", (dialogInterface, i) -> startRelayIfWidgets(context))
                         .setNeutralButton("Yes (crash on fail)", (dialogInterface, i) -> {
                             try {
                                 startForegndSvc(context, serviceIntent);
@@ -62,11 +70,20 @@ public class RelayManager {
         }
     }
 
-    private static void startForegndSvc(Context context, Intent serviceIntent) throws Exception {
+    private static void startForegndSvc(Context context, Intent serviceIntent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(serviceIntent);
         } else {
             context.startService(serviceIntent);
+        }
+    }
+
+    private static Spanned conjureFromHtml(String htm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(htm, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            //noinspection deprecation
+            return Html.fromHtml(htm);
         }
     }
 
