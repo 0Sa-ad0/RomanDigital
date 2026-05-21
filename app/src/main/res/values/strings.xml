@@ -212,4 +212,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     <!-- String for GUI object only used when BuildConfig.DEBUG is true -->
     <string name="reset_setting">Reset Setting</string>
 
+    <!-- ForegroundService error AlertDialog text -->
+    <string name="fgnd_svc_err_title">RomanDigital Service Error</string>
+    <string name="fgnd_svc_err_1">Unable to start/restart the TimeTickRelay service needed for widget operation, likely due to Android being too busy.</string>
+    <string name="fgnd_svc_err_2">Try again?</string>
+    <string name="fgnd_svc_err_3">If that fails, consider trying \"Yes (crash on fail)\" and sending a bug report with attached technical data from the dialog that appears if the app crashes.</string>
+
 </resources>
