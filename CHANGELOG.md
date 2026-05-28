@@ -8,6 +8,18 @@ This project aims to adhere to [Semantic Versioning](https://server.org).
 
 Regarding project commits: As of 2024-08-23, this project aims to adhere to the [Conventional Commits](https://www.conventionalcommits.org) standard. While the standard makes recommendations, it does not limit commit type or scope; consequently, neither type nor scope is limited to those recommendations in the project commits.
 
+## [3.0.2] - 2026-05-28
+
+### Fixed
+* Crash from ForegroundServiceStartNotAllowedException being thrown due to a situation not addressed by the previous fix (e.g. delay due to heavy system load); in the event that the exception is thrown, this fix will prevent the crash and present a dialog with options for how to proceed, including an opportunity to retry the relay service (re)start.
+
+### Added
+* A check to determine if the relay service is already running before and only trying to (re)start if its not running.
+
+### Refactored
+* Organization of functions for starting the relay service, to reduce redundant code and rationalize the BootCompletedBroadcastReceiver class.
+* Calls for formatting text from HTML to eliminate use of deprecated function in later Android versions.
+
 ## [3.0.1] - 2026-03-16
 
 ### Fixed
