@@ -89,6 +89,7 @@ public class TimeDisplayWidget extends AppWidgetProvider {
         boolean ampmSeparator = sp.getBoolean("switch_separator" + appWidgetId, false);
         boolean alignment     = sp.getBoolean("switch_alignment" + appWidgetId, false);
         boolean showSeconds   = sp.getBoolean("switch_seconds" + appWidgetId, false);
+        boolean showDate      = sp.getBoolean("switch_date"    + appWidgetId, false);
         String  tzId          = sp.getString("list_timezone" + appWidgetId, TimeZone.getDefault().getID());
         String layoutMoniker  = sp.getString("list_widget_layout" + appWidgetId, "no_label" );
         int layoutId          = R.layout.time_display_widget;
@@ -143,6 +144,15 @@ public class TimeDisplayWidget extends AppWidgetProvider {
             }
             views.setTextViewText(tzlabel, tzId);
             views.setInt(tzlabel, "setTextColor", getColor(context, widget_text_color_resource));
+        }
+
+        // Date display
+        if (showDate) {
+            views.setViewVisibility(R.id.appwidget_date, VISIBLE);
+            views.setTextViewText(R.id.appwidget_date, romantime.today(tzId));
+            views.setInt(R.id.appwidget_date, "setTextColor", getColor(context, widget_text_color_resource));
+        } else {
+            views.setViewVisibility(R.id.appwidget_date, GONE);
         }
 
         Bundle widgetOptions = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId);

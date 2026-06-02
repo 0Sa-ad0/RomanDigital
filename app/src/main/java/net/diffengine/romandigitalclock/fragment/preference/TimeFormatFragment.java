@@ -98,6 +98,18 @@ public class TimeFormatFragment extends PreferenceFragmentCompat {
         category.addPreference(pref);
     }
 
+    private void addDateSwitch() {
+        SwitchPreferenceCompat pref = new SwitchPreferenceCompat(prefManagerContext);
+        pref.setLayoutResource(R.layout.a_b_switch_layout);
+        pref.setKey("switch_date" + postfix);
+        pref.setDefaultValue(false);
+        pref.setTitle(getString(R.string.date_title));
+        pref.setSummaryOff(getString(R.string.date_off));
+        pref.setSummaryOn(getString(R.string.date_on));
+        pref.setIconSpaceReserved(true);
+        category.addPreference(pref);
+    }
+
     private void addListPreference (String key, String title, String[] entries, String[] entryValues, String defaultValue) {
         ListPreference pref = new ListPreference(prefManagerContext);
         pref.setIconSpaceReserved(true);    // Required for some devices that default this to false
@@ -133,8 +145,9 @@ public class TimeFormatFragment extends PreferenceFragmentCompat {
         addABSwitchPreference("switch_alignment", "Align to Center", "Align to Divider");
         addABSwitchPreference("switch_separator", ": for All", "\u00B7 for AM\n: for PM");
 
-        // Seconds toggle — shown for both app and widget settings
+        // Seconds and date toggles — shown for both app and widget settings
         addSecondsSwitch();
+        addDateSwitch();
 
         if (!postfix.isEmpty()) {
             addSeparator("S1");

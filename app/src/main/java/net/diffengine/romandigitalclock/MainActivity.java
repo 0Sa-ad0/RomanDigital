@@ -72,6 +72,7 @@ import android.os.Looper;
 /** @noinspection Convert2Lambda, SpellCheckingInspection */
 public class MainActivity extends AppCompatActivity {
     private TextView TimeDisplay;
+    private TextView DateDisplay;
     private AppCompatTextView TimeDisplaySizeControl;
     private View     bkgndView;
 
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         // Negate romantime.now arguments where needed to accommodate chosen state arrangement of
         // a/b switches, where false/true states depend on chosen left/right positions
         boolean showSecs = getPref(seconds);
+        boolean showDate = getPref("switch_date");
         String now = romantime.now( !getPref(ampm), getPref(ampmSeparator), !getPref(alignment), TimeZone.getDefault().getID(), showSecs );
 
         // IMPORTANT:
@@ -181,6 +183,15 @@ public class MainActivity extends AppCompatActivity {
 
         TimeDisplay.setTextSize(TypedValue.COMPLEX_UNIT_PX, pxCurrentControlTextSize * textScale);
         TimeDisplay.setText(now);
+
+        // Date display
+        if (showDate) {
+            DateDisplay.setText(romantime.today(TimeZone.getDefault().getID()));
+            DateDisplay.setVisibility(View.VISIBLE);
+        } else {
+            DateDisplay.setVisibility(View.GONE);
+        }
+
         setKeepScreenOn();
     }
 
@@ -225,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setListeners() {
         TimeDisplay = findViewById(R.id.TimeDisplay);
+        DateDisplay = findViewById(R.id.DateDisplay);
 
         bkgndView = findViewById(R.id.main_activity_bkgnd);
         bkgndView.setOnClickListener(bkgndOCL);
@@ -273,6 +285,10 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.TimeDisplay);
         textView.setTextColor(color);
+
+        if (DateDisplay != null) {
+            DateDisplay.setTextColor(color);
+        }
     }
 
     public static String getHexColor(Context context, SharedPreferences sp, String key) {

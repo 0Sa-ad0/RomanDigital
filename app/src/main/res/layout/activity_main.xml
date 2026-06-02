@@ -90,6 +90,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".5" />
 
+    <TextView
+        android:id="@+id/DateDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:gravity="center"
+        android:textColor="@color/clock_red"
+        android:textSize="18sp"
+        android:typeface="monospace"
+        android:letterSpacing="0.05"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TimeDisplay" />
+
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"

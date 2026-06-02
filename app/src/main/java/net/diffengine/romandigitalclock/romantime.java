@@ -90,4 +90,14 @@ public class romantime {
 	public static String now(boolean ampm, boolean ampmSeparator, boolean center, String tzId) {
 		return now(ampm, ampmSeparator, center, tzId, false);
 	}
+
+	/** Returns today's date formatted as dd-mm-yyyy in the given timezone. */
+	public static String today(String tzId) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone(tzId));
+		return String.format("%02d-%02d-%04d",
+				cal.get(Calendar.DAY_OF_MONTH),
+				cal.get(Calendar.MONTH) + 1,
+				cal.get(Calendar.YEAR));
+	}
 }

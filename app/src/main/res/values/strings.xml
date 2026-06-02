@@ -56,6 +56,10 @@
     <string name="civ_fill_s">XXXXXXXXXXXXXXXXXXXX</string>
     <string name="mil_fill_s">XXXXXXXXXXXXXXXXXXXXX</string>
 
+    <string name="date_title">Show date</string>
+    <string name="date_off">Date hidden</string>
+    <string name="date_on">Display DD-MM-YYYY</string>
+
     <string name="menuitem_settings">Settings</string>
     <string name="menuitem_about">About</string>
 
