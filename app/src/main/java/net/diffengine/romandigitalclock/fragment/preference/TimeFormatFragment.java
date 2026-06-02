@@ -131,12 +131,12 @@ public class TimeFormatFragment extends PreferenceFragmentCompat {
 
         addABSwitchPreference("switch_format", "12 Hour", "24 Hour");
         addABSwitchPreference("switch_alignment", "Align to Center", "Align to Divider");
-        addABSwitchPreference("switch_separator", ": for All", "· for AM\n: for PM");
+        addABSwitchPreference("switch_separator", ": for All", "\u00B7 for AM\n: for PM");
+
+        // Seconds toggle — shown for both app and widget settings
+        addSecondsSwitch();
 
         if (!postfix.isEmpty()) {
-            // Seconds toggle (per-widget)
-            addSecondsSwitch();
-
             addSeparator("S1");
 
             String[] timezoneIds = TimeZone.getAvailableIDs();

@@ -34,3 +34,4 @@ google-services.json
 
 # OS X generated file
 .DS_Store
+.sdk-setup/
