@@ -20,6 +20,8 @@
 
 package net.diffengine.romandigitalclock;
 
+import static net.diffengine.romandigitalclock.RelayManager.startRelayIfNeeded;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -77,7 +79,6 @@ public class WidgetSettingsActivity extends AppCompatActivity {
         // Compensate for forced edge-to-edge in SDK 35 (Android 15) and later
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             View containerView = findViewById(android.R.id.content);
-//            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layoutWidgetSettings), (v, insets) -> {
             ViewCompat.setOnApplyWindowInsetsListener(containerView, (v, insets) -> {
 
                 Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
@@ -194,7 +195,7 @@ public class WidgetSettingsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         AboutActivity.showAboutOnUpgrade(this, BuildConfig.VERSION_CODE);
-        BootCompletedBroadcastReceiver.startRelayIfWidgets(this);
+        startRelayIfNeeded(this);
     }
 
     @Override
@@ -208,10 +209,5 @@ public class WidgetSettingsActivity extends AppCompatActivity {
         update_widget.setAction(TimeDisplayWidget.RELAYED_TIME_TICK);
         update_widget.setPackage(this.getPackageName());
         this.sendBroadcast(update_widget);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

@@ -22,6 +22,8 @@ package net.diffengine.romandigitalclock;
 
 import static android.view.View.VISIBLE;
 
+import static net.diffengine.romandigitalclock.RelayManager.startRelayIfNeeded;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
@@ -453,6 +455,6 @@ public class MainActivity extends AppCompatActivity {
         text_resize_attempt_count = 0;
         sendBroadcast(makeIntent(UPDATE_DISPLAY));
 
-        BootCompletedBroadcastReceiver.startRelayIfWidgets(context);
+        startRelayIfNeeded(this);
     }
 }
